@@ -15,7 +15,7 @@ J=size(C_t,1);
 if size(Lambda,1)~=J
     error('Size of Lambda does not match time-domain dimension!');
 end
-L=size(Lambda,2);
+L=size(Lambda,2); %1.??????????L=1
 if isnumeric(C_x) && issymmetric(C_x)
     I=size(C_x,1);
     % adjust Lambda if necessary
@@ -23,11 +23,11 @@ if isnumeric(C_x) && issymmetric(C_x)
         L=I; Lambda=Lambda(:,1:L);
     end
     % find eigen-basis from spatial kernel
-    [Phi_x,Lambda_x]=eigs(C_x,L); % (I,L)
+    [Phi_x,Lambda_x]=eigs(C_x,L); % (I,L) 2.????????  D eigenvalues diagonal, V whose columns eigenvectors.
     Lambda_x=diag(Lambda_x);
 elseif isstruct(C_x)
     % already eigendecomposed
-    Phi_x=C_x.eigV; Lambda_x=C_x.eigD; C_x=C_x.C;
+    Phi_x=C_x.eigV; Lambda_x=C_x.eigD; C_x=C_x.C; %3. meaning of this 
     I=size(C_x,1); d_phi=size(Phi_x,2);
     % adjust Lambda or (Phi_x,Lambda_x) if necessary
     if L>d_phi
@@ -59,7 +59,7 @@ switch opt
             C_x0=(Phi_x.*Lambda_x')*Phi_x';
             PhiLambda2=PhiLambda2+repmat(C_x-C_x0,J,1);
         end
-        C_xt=mat2cell(PhiLambda2,I.*ones(J,1));
+        C_xt=mat2cell(PhiLambda2,I.*ones(J,1)); %4.?????????????????????????????
         C_xt_full=sparse(blkdiag(C_xt{:}))+1e-6.*speye(I*J);
         if full
             C_xt=C_xt_full;
