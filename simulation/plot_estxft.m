@@ -27,7 +27,7 @@ d=1; % space dimension
 l_x=0.5; l_t=0.3; l_xt=sqrt(l_x*l_t);
 sigma2_n=1e-2; % noise variance
 
-% thin the mesh
+% thin the mesh.  1.????????????????????????????????????????
 thin=[50,1];
 x=x(1:thin(1):end,:); t=t(1:thin(2):end);
 I=size(x,1); J=size(t,1);
@@ -37,9 +37,9 @@ L=I;
 s=2; % smoothness
 % spatial kernel
 if d==1
-    dist_x=pdist2(x,x,@(XI,XJ)abs(bsxfun(@minus,XI,XJ)).^s);
+    dist_x=pdist2(x,x,@(XI,XJ)abs(bsxfun(@minus,XI,XJ)).^s);  %2.why not C_x=exp(-(x-x').^2./(2*l_x))
 else
-    dist_x=sum(abs(reshape(x,I,1,[])-reshape(x,1,I,[])).^s,3);
+    dist_x=sum(abs(reshape(x,I,1,[])-reshape(x,1,I,[])).^s,3); %3.why this works
 end
 jit_x=1e-6.*speye(I);
 ker{1}.s=s;ker{1}.dist=dist_x;ker{1}.jit=jit_x;
@@ -61,7 +61,7 @@ ker{2}.s=s;ker{2}.dist=dist_t;ker{2}.jit=jit_t;
 x_mf_t=@(x,t)sum(cos(pi.*x),2).*sin(pi.*t');
 % C_x_t=@(t)C_x.*exp(-abs(x-x').*t./(2*l_xt))+sigma2_n.*eye(I);
 % C_t_x=@(x)C_t.*exp(-abs(x.*(t-t'))./(2*l_xt))+sigma2_n.*eye(J);
-x_covf_t=@(x,t)exp(-(diff(x)).^2./(2*l_x)).*exp(-abs(diff(x)).*t./(2*l_xt))+sigma2_n.*(abs(diff(x))<1e-10);
+x_covf_t=@(x,t)exp(-(diff(x)).^2./(2*l_x)).*exp(-abs(diff(x)).*t./(2*l_xt))+sigma2_n.*(abs(diff(x))<1e-10);  %4.????????????
 
 %% estimation
 
