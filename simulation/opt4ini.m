@@ -23,7 +23,7 @@ dlta=[I*J*K,I*J,J*L]./2;
 alpha=a+dlta;
 
 % initialization
-stgp=STGP(ker{1}.C,ker{2}.C,Lambda,mdl_opt);
+stgp=STGP(ker{1}.C,ker{2}.C,Lambda,mdl_opt); 1.??????????????????what's STGP
 objf=nan(1,4);
 
 % optimization setting
