@@ -35,7 +35,7 @@ L=I;
 
 % parameters of kernel
 s=2; % smoothness
-kappa=1.2; % decaying rate for dynamic eigenvalues
+kappa=1.2; % decaying rate for dynamic eigenvalues %????????????????
 % spatial kernel
 if d==1
     dist_x=pdist2(x,x,@(XI,XJ)abs(bsxfun(@minus,XI,XJ)).^s);
@@ -49,14 +49,14 @@ dist_t=pdist2(t,t,@(XI,XJ)abs(bsxfun(@minus,XI,XJ)).^s);
 jit_t=1e-6.*speye(J);
 ker{2}.s=s;ker{2}.dist=dist_t;ker{2}.jit=jit_t;
 % for hyper-GP
-ker{3}=ker{2}; ker{3}.kappa=kappa;
+ker{3}=ker{2}; ker{3}.kappa=kappa; %???????????????what's 3
 % specify (hyper)-priors
 % (a,b) in inv-gamma priors for sigma2_*, * = eps, t, tilt
 % (m,V) in (log) normal priors for eta_*, (eta=log-rho), * = x, t, tilt
 switch mdl_opt
     case 1
         a=ones(1,3); b=[5e-1,1e1,1e1];
-        m=zeros(1,3); V=[1,1,1];
+        m=zeros(1,3); V=[1,1,1];  %1.????????????V=[0.1,0.1,0.01]
     case 2
         a=ones(1,3); b=[1e-1,1e0,5e0];
         m=zeros(1,3); V=[1,1,2];
@@ -68,7 +68,7 @@ Niter=Nsamp*thin; NBurnIn=floor(Niter*burnrate); Niter=Niter+ NBurnIn;
 samp_sigma2=zeros(Nsamp,3);
 samp_eta=zeros(Nsamp,3);
 samp_M=zeros(Nsamp,I,J);
-samp_Lambda=zeros(Nsamp,J,L);
+samp_Lambda=zeros(Nsamp,J,L);   %2.??????????why J*L
 if opthypr && jtupt
     engy=zeros(Niter,3);
 else
@@ -77,17 +77,17 @@ end
 
 % initializatioin
 sigma2=1./gamrnd(a,1./b);
-eta=normrnd(m,sqrt(V));
+eta=normrnd(m,sqrt(V));   %3.eta=rou???????
 for k=1:length(ker)
-    ker{k}.C=sigma2(k)^(k~=1).*(exp(-.5.*ker{k}.dist.*exp(-ker{k}.s.*eta(k)))+ker{k}.jit);
+    ker{k}.C=sigma2(k)^(k~=1).*(exp(-.5.*ker{k}.dist.*exp(-ker{k}.s.*eta(k)))+ker{k}.jit);  %4.??????(k~=1) C*(x,t,u)
 end
-Lambda=matnrnd(zeros(J,L),ker{3}.C).*(1:L).^(-kappa/2);
+Lambda=matnrnd(zeros(J,L),ker{3}.C).*(1:L).^(-kappa/2); %5.   why.*(1:L).^(-kappa/2)
 switch mdl_opt
     case 1
-        C_z=STGP(ker{1}.C,ker{2}.C,Lambda,mdl_opt).get_jtker();
+        C_z=STGP(ker{1}.C,ker{2}.C,Lambda,mdl_opt).get_jtker(); %6.????????C_z
         M=reshape(mvnrnd(zeros(1,I*J),C_z),I,J);
     case 2
-        M=matnrnd(zeros(I,J),[],ker{2}.C); % (I,J)
+        M=matnrnd(zeros(I,J),[],ker{2}.C); % (I,J)???????????????????
 end
 % constant updates
 dlta=[I*J*K,I*J,J*L]./2;
